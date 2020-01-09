@@ -22,6 +22,8 @@ services:
   kafka:
     image: bitnami/kafka:2.4.0-debian-9-r16
     hostname: kafka.lab.local
+    restart: unless-stopped
+    network_mode: host
     ports:
       - "9092:9092"
       - "9696:9696"
