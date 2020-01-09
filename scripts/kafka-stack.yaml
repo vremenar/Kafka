@@ -21,6 +21,7 @@ services:
       - /opt/data/zookeeper:/bitnami/zookeeper
   kafka:
     image: bitnami/kafka:2.4.0-debian-9-r16
+    container_name: kafka
     hostname: kafka.lab.local
     restart: unless-stopped
     network_mode: host
