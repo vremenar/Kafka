@@ -1,0 +1,46 @@
+version: '2.1'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper:3.5.6-debian-9-r59
+    container_name: zookeeper
+    hostname: kafka.lab.local
+    restart: unless-stopped
+    network_mode: host
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    environment:
+        ZOO_SERVER_ID: "1"
+        ZOO_SERVERS: "0.0.0.0:2888:3888"
+        ZOO_ENABLE_AUTH: "yes"
+        ZOO_SERVER_USERS: "user"
+        OO_SERVER_PASSWORDS: "password"
+    volumes:
+      - /opt/data/zookeeper:/bitnami/zookeeper
+  kafka:
+    image: bitnami/kafka:2.4.0-debian-9-r16
+    hostname: kafka.lab.local
+    ports:
+      - "9092:9092"
+      - "9696:9696"
+    environment:
+        ALLOW_PLAINTEXT_LISTENER: "no" 
+        KAFKA_CERTIFICATE_PASSWORD: "storepassword" 
+        KAFKA_INTER_BROKER_USER: "admin"
+        KAFKA_ZOOKEEPER_USER: "user"
+        KAFKA_ZOOKEEPER_PASSWORD: "password" 
+        KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "false" 
+        KAFKA_CFG_ADVERTISED_LISTENERS: "SASL_SSL://:9092"
+        KAFKA_CFG_DELETE_TOPIC_ENABLE: "true"
+        KAFKA_CFG_DEFAULT_REPLICATION_FACTOR: "1"
+        KAFKA_CFG_INTER_BROKER_PROTOCOL_VERSION: "2.2.2"
+        KAFKA_CFG_LISTENERS: "SASL_SSL://:9092"
+        KAFKA_CFG_ZOOKEEPER_CONNECT: "kafka.lab.local:2181"
+        JMX_PORT: "9696"
+    volumes:
+      - '/opt/certificates/keystore/kafka.keystore.jks:/opt/bitnami/kafka/conf/certs/kafka.keystore.jks:ro'
+      - '/opt/certificates/truststore/kafka.truststore.jks:/opt/bitnami/kafka/conf/certs/kafka.truststore.jks:ro'
+    depends_on:
+      - zookeeper
